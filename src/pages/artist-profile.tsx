@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router';
-import { useParams } from '@tanstack/react-router';
+// import { Link } from '@tanstack/react-router';
+// import { useParams } from '@tanstack/react-router';
 import {
   BarChart3,
   Heart,
@@ -45,7 +45,7 @@ const artistData = {
 };
 
 export function ArtistProfile() {
-  const { artistId } = useParams({ from: '/artist/$artistId' });
+  // const { artistId } = useParams({ from: '/artist/$artistId' });
 
   return (
     <div className="min-h-screen bg-background">

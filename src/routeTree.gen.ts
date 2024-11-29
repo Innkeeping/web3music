@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
@@ -15,7 +17,17 @@ import { Route as UploadImport } from './routes/upload'
 import { Route as IndexImport } from './routes/index'
 import { Route as ArtistArtistIdImport } from './routes/artist/$artistId'
 
+// Create Virtual Routes
+
+const ExploreLazyImport = createFileRoute('/explore')()
+
 // Create/Update Routes
+
+const ExploreLazyRoute = ExploreLazyImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/explore.lazy').then((d) => d.Route))
 
 const UploadRoute = UploadImport.update({
   id: '/upload',
@@ -53,6 +65,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UploadImport
       parentRoute: typeof rootRoute
     }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/artist/$artistId': {
       id: '/artist/$artistId'
       path: '/artist/$artistId'
@@ -68,12 +87,14 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/upload': typeof UploadRoute
+  '/explore': typeof ExploreLazyRoute
   '/artist/$artistId': typeof ArtistArtistIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/upload': typeof UploadRoute
+  '/explore': typeof ExploreLazyRoute
   '/artist/$artistId': typeof ArtistArtistIdRoute
 }
 
@@ -81,27 +102,30 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/upload': typeof UploadRoute
+  '/explore': typeof ExploreLazyRoute
   '/artist/$artistId': typeof ArtistArtistIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/upload' | '/artist/$artistId'
+  fullPaths: '/' | '/upload' | '/explore' | '/artist/$artistId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/upload' | '/artist/$artistId'
-  id: '__root__' | '/' | '/upload' | '/artist/$artistId'
+  to: '/' | '/upload' | '/explore' | '/artist/$artistId'
+  id: '__root__' | '/' | '/upload' | '/explore' | '/artist/$artistId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   UploadRoute: typeof UploadRoute
+  ExploreLazyRoute: typeof ExploreLazyRoute
   ArtistArtistIdRoute: typeof ArtistArtistIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   UploadRoute: UploadRoute,
+  ExploreLazyRoute: ExploreLazyRoute,
   ArtistArtistIdRoute: ArtistArtistIdRoute,
 }
 
@@ -117,6 +141,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/upload",
+        "/explore",
         "/artist/$artistId"
       ]
     },
@@ -125,6 +150,9 @@ export const routeTree = rootRoute
     },
     "/upload": {
       "filePath": "upload.tsx"
+    },
+    "/explore": {
+      "filePath": "explore.lazy.tsx"
     },
     "/artist/$artistId": {
       "filePath": "artist/$artistId.tsx"
